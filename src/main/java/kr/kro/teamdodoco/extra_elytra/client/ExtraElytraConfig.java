@@ -28,7 +28,7 @@ public class ExtraElytraConfig implements ClientModInitializer
         {
             try
             {
-                FileReader rw = new FileReader("coding532.txt");
+                FileReader rw = new FileReader(configFile);
                 BufferedReader br = new BufferedReader(rw);
 
                 String readLine;
