@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "extra_elytra",
+  "version": "${version}",
+  "name": "Extra Elytra",
+  "description": "This mod brings in the Extra Elytra option from the Wurst client.\nIt needs to be installed on the server for the mod to work.",
+  "authors": ["Rumi"],
+  "contact": {},
+  "license": "GPL-3.0",
+  "icon": "assets/extra_elytra/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "kr.kro.teamdodoco.extra_elytra.client.ExtraElytraClient",
+      "kr.kro.teamdodoco.extra_elytra.client.ExtraElytraConfig"
+    ],
+    "modmenu": [
+      "kr.kro.teamdodoco.extra_elytra.client.ModMenuIntegration"
+    ],
+    "main": [
+      "kr.kro.teamdodoco.extra_elytra.server.ExtraElytraServer"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version}",
+    "yet_another_config_lib_v3": ">=3.6.1+1.20.1-fabric"
+  }
+}
