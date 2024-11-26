@@ -1,13 +1,18 @@
-package kr.kro.teamdodoco.extra_elytra.server;
+package kr.kro.teamdodoco.extra_elytra;
 
-import kr.kro.teamdodoco.extra_elytra.ModCheckPayload;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public class ExtraElytraServer implements ModInitializer
+import java.util.HashMap;
+import java.util.Map;
+
+public class ExtraElytra implements ModInitializer
 {
+    private final Map<ServerPlayerEntity, Integer> pendingPlayers = new HashMap<>();
+
     @Override
     public void onInitialize() {
         System.out.println("[Extra Elytra] Extra Elytra Server Event Registered");

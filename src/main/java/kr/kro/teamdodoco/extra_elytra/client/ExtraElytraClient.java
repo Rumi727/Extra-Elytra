@@ -1,5 +1,6 @@
 package kr.kro.teamdodoco.extra_elytra.client;
 
+import kr.kro.teamdodoco.extra_elytra.ModCheckPayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -12,7 +13,7 @@ import net.minecraft.util.Identifier;
 public class ExtraElytraClient implements ClientModInitializer {
 
     static boolean isServerModInstalled = false;
-    static final Identifier MOD_CHECK_CHANNEL = new Identifier("extra_elytra", "mod_check");
+    static final Identifier MOD_CHECK_CHANNEL = Identifier.of("extra_elytra", "mod_check");
 
     @Override
     public void onInitializeClient()
@@ -27,10 +28,10 @@ public class ExtraElytraClient implements ClientModInitializer {
             DisableMod();
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(MOD_CHECK_CHANNEL, (client, handler, buf, responseSender) ->
+        ClientPlayNetworking.registerGlobalReceiver(ModCheckPayload.ID, (payload, context) ->
         {
             // 서버에서 온 모드 채널 패킷 받기
-            client.execute(() ->
+            context.client().execute(() ->
             {
                 System.out.println("[Extra Elytra] Mod is installed on the server!");
                 EnableMod();
@@ -47,7 +48,7 @@ public class ExtraElytraClient implements ClientModInitializer {
 
     public static boolean GetIsServerModInstalled()
     {
-        return isServerModInstalled || MinecraftClient.getInstance().isInSingleplayer();
+        return isServerModInstalled;
     }
 
     static void EnableMod()
