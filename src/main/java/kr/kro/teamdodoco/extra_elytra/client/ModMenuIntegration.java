@@ -80,6 +80,21 @@ public class ModMenuIntegration implements ModMenuApi
                 .controller(TickBoxControllerBuilder::create)
                 .build();
 
+        var hoveringOption = Option.<Boolean>createBuilder() // boolean is the type of option we'll be making
+                .name(Text.literal("Hovering"))
+                .binding(
+                        false, // the default value
+                        () -> ExtraElytraConfig.config.hovering,
+                        newVal ->
+                        {
+                            ExtraElytraConfig.config.hovering = newVal;
+                            ExtraElytraConfig.saveConfig();
+                        }
+                )
+                .description(OptionDescription.of(Text.literal("If height control is enabled, holding shift and space together will hover.")))
+                .controller(TickBoxControllerBuilder::create)
+                .build();
+
         var stopInWaterOption = Option.<Boolean>createBuilder() // boolean is the type of option we'll be making
                 .name(Text.literal("Stop flying in water"))
                 .binding(
@@ -118,6 +133,7 @@ public class ModMenuIntegration implements ModMenuApi
                         .option(instantFlyOption)
                         .option(speedCtrlOption)
                         .option(heightCtrlOption)
+                        .option(hoveringOption)
                         .option(stopInWaterOption)
                         .option(chatLogOption)
                         .build())
