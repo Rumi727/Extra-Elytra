@@ -89,11 +89,16 @@ public class ExtraElytraTick
                 MathHelper.cos(yaw) * 0.05);
 
         Vec3d v = client.player.getVelocity();
+        if (client.options.forwardKey.isPressed())
+            v = v.add(forward);
+        if (client.options.backKey.isPressed())
+            v = v.subtract(forward);
+        if (client.options.leftKey.isPressed())
+            v = v.add(forward.rotateY(90).multiply(2));
+        if (client.options.rightKey.isPressed())
+            v = v.add(forward.rotateY(-90).multiply(2));
 
-        if(client.options.forwardKey.isPressed())
-            client.player.setVelocity(v.add(forward));
-        else if(client.options.backKey.isPressed())
-            client.player.setVelocity(v.subtract(forward));
+        client.player.setVelocity(v);
     }
 
     static void doInstantFly(MinecraftClient client)
