@@ -33,65 +33,65 @@ public class ExtraElytraTick
         if(jumpTimer > 0)
             jumpTimer--;
 
-        ItemStack chest = MinecraftClient.getInstance().player.getEquippedStack(EquipmentSlot.CHEST);
+        ItemStack chest = client.player.getEquippedStack(EquipmentSlot.CHEST);
         if(chest.getItem() != Items.ELYTRA)
             return;
 
-        if(MinecraftClient.getInstance().player.isFallFlying())
+        if(client.player.isFallFlying())
         {
-            if(ExtraElytraConfig.config.stopInWater && MinecraftClient.getInstance().player.isTouchingWater())
+            if(ExtraElytraConfig.config.stopInWater && client.player.isTouchingWater())
             {
-                sendStartStopPacket();
+                sendStartStopPacket(client);
                 return;
             }
 
-            controlSpeed();
-            controlHeight();
+            controlSpeed(client);
+            controlHeight(client);
             return;
         }
 
-        if(ElytraItem.isUsable(chest) && MinecraftClient.getInstance().options.jumpKey.isPressed())
-            doInstantFly();
+        if(ElytraItem.isUsable(chest) && client.options.jumpKey.isPressed())
+            doInstantFly(client);
     }
 
-    static void sendStartStopPacket()
+    static void sendStartStopPacket(MinecraftClient client)
     {
-        ClientCommandC2SPacket packet = new ClientCommandC2SPacket(MinecraftClient.getInstance().player,
+        ClientCommandC2SPacket packet = new ClientCommandC2SPacket(client.player,
                 ClientCommandC2SPacket.Mode.START_FALL_FLYING);
-        MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
+        client.player.networkHandler.sendPacket(packet);
     }
 
-    static void controlHeight()
+    static void controlHeight(MinecraftClient client)
     {
         if(!ExtraElytraConfig.config.heightCtrl)
             return;
 
-        Vec3d v = MinecraftClient.getInstance().player.getVelocity();
+        Vec3d v = client.player.getVelocity();
 
-        if(MinecraftClient.getInstance().options.jumpKey.isPressed())
-            MinecraftClient.getInstance().player.setVelocity(v.x, v.y + 0.08, v.z);
-        else if(MinecraftClient.getInstance().options.sneakKey.isPressed())
-            MinecraftClient.getInstance().player.setVelocity(v.x, v.y - 0.04, v.z);
+        if(client.options.jumpKey.isPressed())
+            client.player.setVelocity(v.x, v.y + 0.08, v.z);
+        else if(client.options.sneakKey.isPressed())
+            client.player.setVelocity(v.x, v.y - 0.04, v.z);
     }
 
-    static void controlSpeed()
+    static void controlSpeed(MinecraftClient client)
     {
         if(!ExtraElytraConfig.config.speedCtrl)
             return;
 
-        float yaw = (float)Math.toRadians(MinecraftClient.getInstance().player.getYaw());
+        float yaw = (float)Math.toRadians(client.player.getYaw());
         Vec3d forward = new Vec3d(-MathHelper.sin(yaw) * 0.05, 0,
                 MathHelper.cos(yaw) * 0.05);
 
-        Vec3d v = MinecraftClient.getInstance().player.getVelocity();
+        Vec3d v = client.player.getVelocity();
 
-        if(MinecraftClient.getInstance().options.forwardKey.isPressed())
-            MinecraftClient.getInstance().player.setVelocity(v.add(forward));
-        else if(MinecraftClient.getInstance().options.backKey.isPressed())
-            MinecraftClient.getInstance().player.setVelocity(v.subtract(forward));
+        if(client.options.forwardKey.isPressed())
+            client.player.setVelocity(v.add(forward));
+        else if(client.options.backKey.isPressed())
+            client.player.setVelocity(v.subtract(forward));
     }
 
-    static void doInstantFly()
+    static void doInstantFly(MinecraftClient client)
     {
         if(!ExtraElytraConfig.config.instantFly)
             return;
@@ -99,11 +99,11 @@ public class ExtraElytraTick
         if(jumpTimer <= 0)
         {
             jumpTimer = 20;
-            MinecraftClient.getInstance().player.setJumping(false);
-            MinecraftClient.getInstance().player.setSprinting(true);
-            MinecraftClient.getInstance().player.jump();
+            client.player.setJumping(false);
+            client.player.setSprinting(true);
+            client.player.jump();
         }
 
-        sendStartStopPacket();
+        sendStartStopPacket(client);
     }
 }
