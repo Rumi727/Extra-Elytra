@@ -104,3 +104,5 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+.idea/**/Minecraft_Server.xml
+.idea/**/Minecraft_Client.xml
