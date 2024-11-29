@@ -39,6 +39,7 @@ public class ExtraElytraConfig implements ClientModInitializer
                         case "instantFly = true" -> config.instantFly = true;
                         case "speedCtrl = true" -> config.speedCtrl = true;
                         case "heightCtrl = true" -> config.heightCtrl = true;
+                        case "hovering = true" -> config.hovering = true;
                         case "stopInWater = true" -> config.stopInWater = true;
                         case "chatLog = true" -> config.chatLog = true;
                     }
@@ -68,6 +69,9 @@ public class ExtraElytraConfig implements ClientModInitializer
             bw.newLine();
 
             bw.write("heightCtrl = " + config.heightCtrl);
+            bw.newLine();
+
+            bw.write("hovering = " + config.hovering);
             bw.newLine();
 
             bw.write("stopInWater = " + config.stopInWater);
