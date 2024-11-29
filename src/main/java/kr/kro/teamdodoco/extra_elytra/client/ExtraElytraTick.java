@@ -1,17 +1,24 @@
 package kr.kro.teamdodoco.extra_elytra.client;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ExtraElytraTick
 {
+    private static final Identifier UPDATE_MOTION_CHANNEL = new Identifier("extra_elytra", "update_motion");
+
     static int jumpTimer;
 
     public static void onInitialize()
@@ -47,6 +54,15 @@ public class ExtraElytraTick
 
             controlSpeed();
             controlHeight();
+
+            PacketByteBuf buf = PacketByteBufs.create();
+            Vec3d motion = client.player.getVelocity();
+
+            buf.writeDouble(motion.x);
+            buf.writeDouble(motion.y);
+            buf.writeDouble(motion.z);
+
+            ClientPlayNetworking.send(UPDATE_MOTION_CHANNEL, buf);
             return;
         }
 
