@@ -13,7 +13,6 @@ import net.minecraft.util.Identifier;
 public class ExtraElytraClient implements ClientModInitializer {
 
     static boolean isServerModInstalled = false;
-    static final Identifier MOD_CHECK_CHANNEL = Identifier.of("extra_elytra", "mod_check");
 
     @Override
     public void onInitializeClient()

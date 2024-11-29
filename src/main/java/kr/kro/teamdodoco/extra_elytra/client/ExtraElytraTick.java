@@ -1,6 +1,8 @@
 package kr.kro.teamdodoco.extra_elytra.client;
 
+import kr.kro.teamdodoco.extra_elytra.UpdateMotionPayload;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ElytraItem;
@@ -47,6 +49,9 @@ public class ExtraElytraTick
 
             controlSpeed(client);
             controlHeight(client);
+
+            //서버로 업데이트 모션 채널 패킷 보내기
+            ClientPlayNetworking.send(new UpdateMotionPayload(client.player.getVelocity()));
             return;
         }
 

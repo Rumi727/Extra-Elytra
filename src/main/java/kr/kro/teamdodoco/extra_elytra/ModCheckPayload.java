@@ -10,7 +10,7 @@ public record ModCheckPayload() implements CustomPayload
     private static final Identifier MOD_CHECK_CHANNEL = Identifier.of("extra_elytra", "mod_check");
 
     public static final Id<ModCheckPayload> ID = new Id<>(MOD_CHECK_CHANNEL);
-    public static final PacketCodec<RegistryByteBuf, ModCheckPayload> CODEC = new PacketCodec<RegistryByteBuf, ModCheckPayload>() {
+    public static final PacketCodec<RegistryByteBuf, ModCheckPayload> CODEC = new PacketCodec<>() {
         @Override
         public ModCheckPayload decode(RegistryByteBuf buf) { return new ModCheckPayload(); }
 
