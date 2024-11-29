@@ -77,6 +77,7 @@ public class ExtraElytraTick
         client.player.networkHandler.sendPacket(packet);
     }
 
+    static double currentHoverYSpeed = 0;
     static void controlHeight(MinecraftClient client)
     {
         if(!ExtraElytraConfig.config.heightCtrl)
@@ -84,10 +85,27 @@ public class ExtraElytraTick
 
         Vec3d v = client.player.getVelocity();
 
-        if(client.options.jumpKey.isPressed())
-            client.player.setVelocity(v.x, v.y + 0.08, v.z);
-        else if(client.options.sneakKey.isPressed())
-            client.player.setVelocity(v.x, v.y - 0.04, v.z);
+        if (ExtraElytraConfig.config.hovering && client.options.jumpKey.isPressed() && client.options.sneakKey.isPressed())
+        {
+            float pitch = (float)Math.toRadians(client.player.getPitch());
+            float pitchCos = MathHelper.cos(pitch);
+            double sqrPitchCos = pitchCos * pitchCos;
+
+            double hoverYSpeed = -0.08 + sqrPitchCos * 0.06;
+            currentHoverYSpeed = MathHelper.lerp(0.2, currentHoverYSpeed, 0);
+
+            v = new Vec3d(v.x, currentHoverYSpeed - hoverYSpeed, v.z);
+        }
+        else
+        {
+            currentHoverYSpeed = v.y;
+            if (client.options.jumpKey.isPressed())
+                v = v.add(0, 0.08, 0);
+            else if (client.options.sneakKey.isPressed())
+                v = v.subtract(0, 0.04, 0);
+        }
+
+        client.player.setVelocity(v);
     }
 
     static void controlSpeed(MinecraftClient client)
