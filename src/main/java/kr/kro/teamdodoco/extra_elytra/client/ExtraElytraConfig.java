@@ -26,6 +26,14 @@ public class ExtraElytraConfig implements ClientModInitializer
         }
         else
         {
+            config.enableMod = false;
+            config.instantFly = false;
+            config.speedCtrl = false;
+            config.heightCtrl = false;
+            config.hovering = false;
+            config.stopInWater = false;
+            config.chatLog = false;
+
             try
             {
                 FileReader rw = new FileReader(configFile);
