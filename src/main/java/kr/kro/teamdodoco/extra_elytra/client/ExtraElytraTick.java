@@ -35,10 +35,6 @@ public class ExtraElytraTick
         if(jumpTimer > 0)
             jumpTimer--;
 
-        ItemStack chest = client.player.getEquippedStack(EquipmentSlot.CHEST);
-        if(chest.getItem() != Items.ELYTRA)
-            return;
-
         if(client.player.isFallFlying())
         {
             if(ExtraElytraConfig.config.stopInWater && client.player.isTouchingWater())
@@ -54,6 +50,10 @@ public class ExtraElytraTick
             ClientPlayNetworking.send(new UpdateMotionPayload(client.player.getVelocity()));
             return;
         }
+
+        ItemStack chest = client.player.getEquippedStack(EquipmentSlot.CHEST);
+        if(chest.getItem() != Items.ELYTRA)
+            return;
 
         if(ElytraItem.isUsable(chest) && client.options.jumpKey.isPressed())
             doInstantFly(client);
