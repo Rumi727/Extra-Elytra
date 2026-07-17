@@ -4,8 +4,8 @@ import kr.kro.teamdodoco.extra_elytra.ModCheckPayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 public class ExtraElytraClient implements ClientModInitializer {
 
@@ -33,7 +33,7 @@ public class ExtraElytraClient implements ClientModInitializer {
                 EnableMod();
 
                 if (ExtraElytraConfig.config.chatLog)
-                    MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal("§b[Extra Elytra]§r Mod is installed on the server!"));
+                    Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(Component.literal("§b[Extra Elytra]§r Mod is installed on the server!"));
             });
         });
 

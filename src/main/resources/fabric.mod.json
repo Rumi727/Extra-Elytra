@@ -23,7 +23,7 @@
   },
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": "${minecraft_version}",
-    "yet_another_config_lib_v3": ">=3.6.1+1.20.1-fabric"
+    "minecraft": "${minecraft_dependency}",
+    "yet_another_config_lib_v3": ">=3.9.5+26.3-fabric"
   }
 }

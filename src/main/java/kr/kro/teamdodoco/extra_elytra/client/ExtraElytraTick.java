@@ -3,14 +3,14 @@ package kr.kro.teamdodoco.extra_elytra.client;
 import kr.kro.teamdodoco.extra_elytra.UpdateMotionPayload;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ElytraItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ExtraElytraTick
 {
@@ -24,12 +24,12 @@ public class ExtraElytraTick
         });
     }
 
-    static void onUpdate(MinecraftClient client)
+    static void onUpdate(Minecraft client)
     {
         if (!ExtraElytraConfig.config.enableMod || !ExtraElytraClient.GetIsServerModInstalled())
             return;
 
-        if (client.player == null || client.world == null)
+        if (client.player == null || client.level == null)
             return;
 
         if(jumpTimer > 0)
@@ -37,7 +37,7 @@ public class ExtraElytraTick
 
         if(client.player.isFallFlying())
         {
-            if(ExtraElytraConfig.config.stopInWater && client.player.isTouchingWater())
+            if(ExtraElytraConfig.config.stopInWater && client.player.isInWater())
             {
                 sendStartStopPacket(client);
                 return;
@@ -47,79 +47,79 @@ public class ExtraElytraTick
             controlHeight(client);
 
             //서버로 업데이트 모션 채널 패킷 보내기
-            ClientPlayNetworking.send(new UpdateMotionPayload(client.player.getVelocity()));
+            ClientPlayNetworking.send(new UpdateMotionPayload(client.player.getDeltaMovement()));
             return;
         }
 
-        ItemStack chest = client.player.getEquippedStack(EquipmentSlot.CHEST);
+        ItemStack chest = client.player.getItemBySlot(EquipmentSlot.CHEST);
         if(chest.getItem() != Items.ELYTRA)
             return;
 
-        if(ElytraItem.isUsable(chest) && client.options.jumpKey.isPressed())
+        if(LivingEntity.canGlideUsing(chest, EquipmentSlot.CHEST) && client.options.keyJump.isDown())
             doInstantFly(client);
     }
 
-    static void sendStartStopPacket(MinecraftClient client)
+    static void sendStartStopPacket(Minecraft client)
     {
-        ClientCommandC2SPacket packet = new ClientCommandC2SPacket(client.player,
-                ClientCommandC2SPacket.Mode.START_FALL_FLYING);
-        client.player.networkHandler.sendPacket(packet);
+        ServerboundPlayerCommandPacket packet = new ServerboundPlayerCommandPacket(client.player,
+                ServerboundPlayerCommandPacket.Action.START_FALL_FLYING);
+        client.player.connection.send(packet);
     }
 
     static double currentHoverYSpeed = 0;
-    static void controlHeight(MinecraftClient client)
+    static void controlHeight(Minecraft client)
     {
         if(!ExtraElytraConfig.config.heightCtrl)
             return;
 
-        Vec3d v = client.player.getVelocity();
+        Vec3 v = client.player.getDeltaMovement();
 
-        if (ExtraElytraConfig.config.hovering && client.options.jumpKey.isPressed() && client.options.sneakKey.isPressed())
+        if (ExtraElytraConfig.config.hovering && client.options.keyJump.isDown() && client.options.keyShift.isDown())
         {
-            float pitch = (float)Math.toRadians(client.player.getPitch());
-            float pitchCos = MathHelper.cos(pitch);
+            float pitch = (float)Math.toRadians(client.player.getXRot());
+            float pitchCos = Mth.cos(pitch);
             double sqrPitchCos = pitchCos * pitchCos;
 
             double hoverYSpeed = -0.08 + sqrPitchCos * 0.06;
-            currentHoverYSpeed = MathHelper.lerp(0.2, currentHoverYSpeed, 0);
+            currentHoverYSpeed = Mth.lerp(0.2, currentHoverYSpeed, 0);
 
-            v = new Vec3d(v.x, currentHoverYSpeed - hoverYSpeed, v.z);
+            v = new Vec3(v.x, currentHoverYSpeed - hoverYSpeed, v.z);
         }
         else
         {
             currentHoverYSpeed = v.y;
-            if (client.options.jumpKey.isPressed())
+            if (client.options.keyJump.isDown())
                 v = v.add(0, 0.08, 0);
-            else if (client.options.sneakKey.isPressed())
+            else if (client.options.keyShift.isDown())
                 v = v.subtract(0, 0.04, 0);
         }
 
-        client.player.setVelocity(v);
+        client.player.setDeltaMovement(v);
     }
 
-    static void controlSpeed(MinecraftClient client)
+    static void controlSpeed(Minecraft client)
     {
         if(!ExtraElytraConfig.config.speedCtrl)
             return;
 
-        float yaw = (float)Math.toRadians(client.player.getYaw());
-        Vec3d forward = new Vec3d(-MathHelper.sin(yaw) * 0.05, 0,
-                MathHelper.cos(yaw) * 0.05);
+        float yaw = (float)Math.toRadians(client.player.getYRot());
+        Vec3 forward = new Vec3(-Mth.sin(yaw) * 0.05, 0,
+                Mth.cos(yaw) * 0.05);
 
-        Vec3d v = client.player.getVelocity();
-        if (client.options.forwardKey.isPressed())
+        Vec3 v = client.player.getDeltaMovement();
+        if (client.options.keyUp.isDown())
             v = v.add(forward);
-        if (client.options.backKey.isPressed())
+        if (client.options.keyDown.isDown())
             v = v.subtract(forward);
-        if (client.options.leftKey.isPressed())
-            v = v.add(forward.rotateY(90).multiply(1.7));
-        if (client.options.rightKey.isPressed())
-            v = v.add(forward.rotateY(-90).multiply(1.7));
+        if (client.options.keyLeft.isDown())
+            v = v.add(forward.yRot(90).scale(1.7));
+        if (client.options.keyRight.isDown())
+            v = v.add(forward.yRot(-90).scale(1.7));
 
-        client.player.setVelocity(v);
+        client.player.setDeltaMovement(v);
     }
 
-    static void doInstantFly(MinecraftClient client)
+    static void doInstantFly(Minecraft client)
     {
         if(!ExtraElytraConfig.config.instantFly)
             return;
@@ -129,7 +129,7 @@ public class ExtraElytraTick
             jumpTimer = 20;
             client.player.setJumping(false);
             client.player.setSprinting(true);
-            client.player.jump();
+            client.player.jumpFromGround();
         }
 
         sendStartStopPacket(client);

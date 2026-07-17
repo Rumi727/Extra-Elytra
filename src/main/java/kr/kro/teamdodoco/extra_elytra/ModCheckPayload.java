@@ -1,25 +1,25 @@
 package kr.kro.teamdodoco.extra_elytra;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 
-public record ModCheckPayload() implements CustomPayload
+public record ModCheckPayload() implements CustomPacketPayload
 {
-    private static final Identifier MOD_CHECK_CHANNEL = Identifier.of("extra_elytra", "mod_check");
+    private static final Identifier MOD_CHECK_CHANNEL = Identifier.fromNamespaceAndPath("extra_elytra", "mod_check");
 
-    public static final Id<ModCheckPayload> ID = new Id<>(MOD_CHECK_CHANNEL);
-    public static final PacketCodec<RegistryByteBuf, ModCheckPayload> CODEC = new PacketCodec<>() {
+    public static final Type<ModCheckPayload> ID = new Type<>(MOD_CHECK_CHANNEL);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ModCheckPayload> CODEC = new StreamCodec<>() {
         @Override
-        public ModCheckPayload decode(RegistryByteBuf buf) { return new ModCheckPayload(); }
+        public ModCheckPayload decode(RegistryFriendlyByteBuf buf) { return new ModCheckPayload(); }
 
         @Override
-        public void encode(RegistryByteBuf buf, ModCheckPayload value) {}
+        public void encode(RegistryFriendlyByteBuf buf, ModCheckPayload value) {}
     };
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 }
